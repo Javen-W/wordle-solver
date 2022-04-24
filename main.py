@@ -1,3 +1,5 @@
+import string
+
 from termcolor import colored
 from random import choice
 
@@ -56,7 +58,13 @@ class Wordle:
 
     def _update_knowledge_base(self):
         if not self.knowledge_base:
-            return
+            self.knowledge_base = [
+                string.ascii_lowercase,
+                string.ascii_lowercase,
+                string.ascii_lowercase,
+                string.ascii_lowercase,
+                string.ascii_lowercase
+            ]
 
     def _update_possible_words(self):
         if not self.possible_words:
