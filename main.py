@@ -56,6 +56,10 @@ class Wordle:
                 letter_state=self._get_letter_state(pos=i, letter=c)
             )
             self._update_possible_words()
+        print("Updated KB: " + str(self.knowledge_base))
+        print("Updated possible words size: " + str(len(self.possible_words)))
+        if len(self.possible_words) < 50:
+            print("Possible words left: " + str(self.possible_words))
 
     def _get_letter_state(self, pos, letter):
         if self.answer_word[pos] == letter:
@@ -91,7 +95,6 @@ class Wordle:
             self.knowledge_base['word_must_include'].append(letter)
         elif letter_state == self.COLOR_CORRECT_LETTER_AND_POS:
             self.knowledge_base['possible_letters'][pos] = letter
-        print("Updated KB: " + str(self.knowledge_base))
 
     def _update_possible_words(self):
         if not self.possible_words:
@@ -108,9 +111,6 @@ class Wordle:
             for c in self.knowledge_base['word_must_include']:
                 self.possible_words = [w for w in self.possible_words if c in w]
             self.possible_words = re.findall(regex, ''.join(self.possible_words))
-            print("Updated possible words size: " + str(len(self.possible_words)))
-            if len(self.possible_words) < 50:
-                print("Possible words left: " + str(self.possible_words))
 
     @classmethod
     def _is_word_valid(cls, word):
