@@ -21,8 +21,6 @@ class Wordle:
     COLOR_UNUSED_LETTER = 'white'
 
     def _start(self):
-        self._pick_answer_word()
-
         while len(self.guessed_words) < 6 and self.answer_word not in self.guessed_words:
             self._print_guesses()
             self._prompt_guess()
@@ -73,6 +71,7 @@ class Wordle:
 
     def _pick_answer_word(self):
         self.answer_word = choice(self.possible_words)
+        # print("DEBUG: answer word: " + str(self.answer_word))
 
     def _update_knowledge_base(self, letter=None, pos=None, letter_state=None):
         if not self.knowledge_base:
@@ -110,7 +109,9 @@ class Wordle:
             )
             for c in self.knowledge_base['word_must_include']:
                 self.possible_words = [w for w in self.possible_words if c in w]
-            self.possible_words = re.findall(regex, ''.join(self.possible_words))
+                # print("DEBUG: must include filtered list: " + str([w for w in self.possible_words if c in w]))
+            self.possible_words = re.findall(regex, " ".join(self.possible_words))
+        # print("DEBUG: possible words updated: " + str(self.possible_words))
 
     @classmethod
     def _is_word_valid(cls, word):
