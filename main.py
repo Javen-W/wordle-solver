@@ -90,13 +90,13 @@ class Wordle:
 
     def _update_possible_words(self):
         if not self.possible_words:
-            with open("words.txt") as f:
+            with open("guess_words.txt") as f:
                 self.possible_words = f.read().split("\n")
 
     @classmethod
     def _is_word_valid(cls, word):
         if len(word) == 5:
-            with open("words.txt") as f:
+            with open("guess_words.txt") as f:
                 return word in f.read().split("\n")
         return False
 
