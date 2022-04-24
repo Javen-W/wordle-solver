@@ -1,5 +1,5 @@
 import string
-
+import re
 from termcolor import colored
 from random import choice
 
@@ -55,6 +55,7 @@ class Wordle:
                 pos=i,
                 letter_state=self._get_letter_state(pos=i, letter=c)
             )
+            self._update_possible_words()
 
     def _get_letter_state(self, pos, letter):
         if self.answer_word[pos] == letter:
@@ -71,27 +72,45 @@ class Wordle:
 
     def _update_knowledge_base(self, letter=None, pos=None, letter_state=None):
         if not self.knowledge_base:
-            self.knowledge_base = [
-                string.ascii_lowercase,
-                string.ascii_lowercase,
-                string.ascii_lowercase,
-                string.ascii_lowercase,
-                string.ascii_lowercase,
-            ]
+            self.knowledge_base = {
+                'possible_letters': [
+                    string.ascii_lowercase,
+                    string.ascii_lowercase,
+                    string.ascii_lowercase,
+                    string.ascii_lowercase,
+                    string.ascii_lowercase,
+                ],
+                'word_must_include': []
+            }
             return
         if letter_state == self.COLOR_UNUSED_LETTER:
             for i in range(5):
-                self.knowledge_base[i] = self.knowledge_base[i].replace(letter, '')
+                self.knowledge_base['possible_letters'][i] = self.knowledge_base['possible_letters'][i].replace(letter, '')
         elif letter_state == self.COLOR_USED_LETTER:
-            self.knowledge_base[pos] = self.knowledge_base[pos].replace(letter, '')
+            self.knowledge_base['possible_letters'][pos] = self.knowledge_base['possible_letters'][pos].replace(letter, '')
+            self.knowledge_base['word_must_include'].append(letter)
         elif letter_state == self.COLOR_CORRECT_LETTER_AND_POS:
-            self.knowledge_base[pos] = letter
+            self.knowledge_base['possible_letters'][pos] = letter
         print("Updated KB: " + str(self.knowledge_base))
 
     def _update_possible_words(self):
         if not self.possible_words:
             with open("guess_words.txt") as f:
                 self.possible_words = f.read().split("\n")
+        else:
+            regex = r"[{}][{}][{}][{}][{}]".format(
+                self.knowledge_base['possible_letters'][0],
+                self.knowledge_base['possible_letters'][1],
+                self.knowledge_base['possible_letters'][2],
+                self.knowledge_base['possible_letters'][3],
+                self.knowledge_base['possible_letters'][4],
+            )
+            for c in self.knowledge_base['word_must_include']:
+                self.possible_words = [w for w in self.possible_words if c in w]
+            self.possible_words = re.findall(regex, ''.join(self.possible_words))
+            print("Updated possible words size: " + str(len(self.possible_words)))
+            if len(self.possible_words) < 50:
+                print("Possible words left: " + str(self.possible_words))
 
     @classmethod
     def _is_word_valid(cls, word):
