@@ -37,7 +37,7 @@ class Wordle:
         for i, w in enumerate(self.guessed_words):
             output = ""
             for j, c in enumerate(w):
-                output += "[{}]".format(self._get_letter_color(j, c))
+                output += "[{}]".format(self._get_letter_color(letter=c, letter_state=self._get_letter_state(pos=j, letter=c)))
             print(output)
         for i in range(6 - len(self.guessed_words)):
             print("[ ][ ][ ][ ][ ]")
@@ -49,18 +49,27 @@ class Wordle:
             return print()
         print()
         self.guessed_words.append(guess)
+        for i, c in enumerate(guess):
+            self._update_knowledge_base(
+                letter=c,
+                pos=i,
+                letter_state=self._get_letter_state(pos=i, letter=c)
+            )
 
-    def _get_letter_color(self, pos, c):
-        if self.answer_word[pos] == c:
-            return colored(c, self.COLOR_CORRECT_LETTER_AND_POS)
-        if c in self.answer_word:
-            return colored(c, self.COLOR_USED_LETTER)
-        return colored(c, self.COLOR_UNUSED_LETTER)
+    def _get_letter_state(self, pos, letter):
+        if self.answer_word[pos] == letter:
+            return self.COLOR_CORRECT_LETTER_AND_POS
+        if letter in self.answer_word:
+            return self.COLOR_USED_LETTER
+        return self.COLOR_UNUSED_LETTER
+
+    def _get_letter_color(self, letter, letter_state):
+        return colored(letter, letter_state)
 
     def _pick_answer_word(self):
         self.answer_word = choice(self.possible_words)
 
-    def _update_knowledge_base(self):
+    def _update_knowledge_base(self, letter=None, pos=None, letter_state=None):
         if not self.knowledge_base:
             self.knowledge_base = [
                 string.ascii_lowercase,
@@ -69,6 +78,15 @@ class Wordle:
                 string.ascii_lowercase,
                 string.ascii_lowercase,
             ]
+            return
+        if letter_state == self.COLOR_UNUSED_LETTER:
+            for i in range(5):
+                self.knowledge_base[i] = self.knowledge_base[i].replace(letter, '')
+        elif letter_state == self.COLOR_USED_LETTER:
+            self.knowledge_base[pos] = self.knowledge_base[pos].replace(letter, '')
+        elif letter_state == self.COLOR_CORRECT_LETTER_AND_POS:
+            self.knowledge_base[pos] = letter
+        print("Updated KB: " + str(self.knowledge_base))
 
     def _update_possible_words(self):
         if not self.possible_words:
