@@ -16,6 +16,10 @@ class Wordle:
         self._pick_answer_word()
         self._start()
 
+    COLOR_CORRECT_LETTER_AND_POS = 'green'
+    COLOR_USED_LETTER = 'yellow'
+    COLOR_UNUSED_LETTER = 'white'
+
     def _start(self):
         self._pick_answer_word()
 
@@ -48,10 +52,10 @@ class Wordle:
 
     def _get_letter_color(self, pos, c):
         if self.answer_word[pos] == c:
-            return colored(c, 'green')
+            return colored(c, self.COLOR_CORRECT_LETTER_AND_POS)
         if c in self.answer_word:
-            return colored(c, 'yellow')
-        return colored(c, 'white')
+            return colored(c, self.COLOR_USED_LETTER)
+        return colored(c, self.COLOR_UNUSED_LETTER)
 
     def _pick_answer_word(self):
         self.answer_word = choice(self.possible_words)
@@ -63,7 +67,7 @@ class Wordle:
                 string.ascii_lowercase,
                 string.ascii_lowercase,
                 string.ascii_lowercase,
-                string.ascii_lowercase
+                string.ascii_lowercase,
             ]
 
     def _update_possible_words(self):
