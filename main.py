@@ -95,8 +95,8 @@ class Wordle:
 
     def _update_possible_words(self):
         if not self.possible_words:
-            with open("guess_words.txt") as f:
-                self.possible_words = f.read().split("\n")
+            with open("answer_words.txt") as f:
+                self.possible_words = f.read().split(",")
         else:
             regex = r"[{}][{}][{}][{}][{}]".format(
                 self.knowledge_base['possible_letters'][0],
